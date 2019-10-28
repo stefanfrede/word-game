@@ -7,23 +7,44 @@
   <link
     href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
     rel="stylesheet">
+
+  <style>
+    body {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100vw;
+    }
+  </style>
 </head>
 
 <body>
   <div class="w-full max-w-xs">
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div
+      class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3"
+      role="alert">
+      <p class="font-bold">
+        Submit a word
+      </p>
+      <p class="text-sm">
+        A word is accepted if its letters are contained in the base string AND
+        if it is a valid english word.
+      </p>
+    </div>
+    <form id="form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
       <div class="mb-4">
         <label
           class="block text-gray-700 text-sm font-bold mb-2"
           for="username">
-          Random string
+          Base string
         </label>
         <input
           class="shadow appearance-none border rounded w-full py-2 px-3
           text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="random-string"
+          id="base-string"
           type="text"
-          placeholder="Random string"
+          placeholder="Base string"
           disabled>
       </div>
       <div class="mb-4">
@@ -37,13 +58,15 @@
           text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="user-input"
           type="text"
-          placeholder="Word">
+          placeholder="Insert word"
+          autofocus>
+        <p class="text-red-500 text-xs italic" hidden></p>
       </div>
       <div class="flex items-center justify-between">
         <button
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4
           rounded focus:outline-none focus:shadow-outline js-btn-submit"
-          type="button">
+          type="submit">
           Submit
         </button>
         <a
@@ -54,9 +77,17 @@
         </a>
       </div>
     </form>
-    <div id="highscore"></div>
+    <table id="highscore" class="table-auto" hidden>
+      <thead>
+        <tr>
+          <th class="px-4 py-2">Position</th>
+          <th class="px-4 py-2">Word</th>
+          <th class="px-4 py-2">Score</th>
+        </tr>
+      </thead>
+      <tbody id="highscoreBody"></tbody>
+    </table>
   </div>
-
   <script src="index.js"></script>
 </body>
 </html>

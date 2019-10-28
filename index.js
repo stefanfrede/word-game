@@ -1,10 +1,41 @@
 function WordGame(length, wordlist) {
   this.highscore = [];
-  this.randomString = this.makeRandomString(length);
+  this.randomString = void 0;
   this.wordlist = wordlist;
 
-  this.setupEventListener();
-  this.populateString();
+  this.validStyles = [
+    'shadow',
+    'appearance-none',
+    'border',
+    'rounded',
+    'w-full',
+    'py-2',
+    'px-3',
+    'text-gray-700',
+    'leading-tight',
+    'focus:outline-none',
+    'focus:shadow-outline',
+  ];
+
+  this.errorStyles = [
+    'shadow',
+    'appearance-none',
+    'border',
+    'border-red-500',
+    'rounded',
+    'w-full',
+    'py-2',
+    'px-3',
+    'text-gray-700',
+    'mb-3',
+    'leading-tight',
+    'focus:outline-none',
+    'focus:shadow-outline',
+  ];
+
+  this.generateRandomString();
+  this.setupEventListeners();
+  this.populateBaseString();
 }
 
 WordGame.build = async function build(length) {
@@ -35,7 +66,9 @@ WordGame.readWordlist = function readWordlist(file) {
   });
 };
 
-WordGame.prototype.makeRandomString = function makeRandomString(length) {
+WordGame.prototype.generateRandomString = function generateRandomString(
+  length,
+) {
   const characters = 'abcdefghijklmnopqrstuvwxyz';
   const charactersLength = characters.length;
   const strLength = length || 15;
@@ -46,7 +79,7 @@ WordGame.prototype.makeRandomString = function makeRandomString(length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
 
-  return result;
+  this.randomString = result;
 };
 
 WordGame.prototype.submitWord = async function submitWord(word) {
@@ -72,6 +105,7 @@ WordGame.prototype.submitWord = async function submitWord(word) {
 
   if (isProvided) {
     const chars = word.split('');
+    const resetBtn = document.querySelector('.js-btn-reset');
 
     let isAccepted = true;
 
@@ -84,11 +118,12 @@ WordGame.prototype.submitWord = async function submitWord(word) {
 
     if (isAccepted) {
       this.addToHighscore(word);
+      resetBtn.click();
     } else {
-      console.error('Sorry, you used invalid characters.');
+      this.showError('Sorry, you used invalid characters.');
     }
   } else {
-    console.error('Sorry, this is not an english word.');
+    this.showError('Sorry, this is not an english word.');
   }
 };
 
@@ -155,45 +190,95 @@ WordGame.prototype.getScoreAtPosition = function getScoreAtPosition(position) {
   return this.highscore[position] ? this.highscore[position].score : 0;
 };
 
-WordGame.prototype.setupEventListener = function setupEventListener() {
-  const theForm = document.querySelector('form');
+WordGame.prototype.setupEventListeners = function setupEventListeners() {
+  const form = document.getElementById('form');
   const resetBtn = document.querySelector('.js-btn-reset');
-  const submitBtn = document.querySelector('.js-btn-submit');
+
+  form.addEventListener(
+    'submit',
+    function(evt) {
+      evt.preventDefault();
+
+      this.submitWord(evt.target['user-input'].value);
+    }.bind(this),
+    false,
+  );
 
   resetBtn.addEventListener(
     'click',
-    e => {
-      e.preventDefault;
+    function(evt) {
+      evt.preventDefault();
 
-      theForm.reset();
-      this.randomString = this.makeRandomString(length);
-      this.populateString();
-    },
-    false,
-  );
+      form.reset();
 
-  submitBtn.addEventListener(
-    'click',
-    e => {
-      e.preventDefault;
-
-      const userInput = document.getElementById('user-input').value;
-
-      this.submitWord(userInput);
-      resetBtn.click();
-    },
+      this.hideError();
+      this.generateRandomString();
+      this.populateBaseString();
+      this.focusInputField();
+    }.bind(this),
     false,
   );
 };
 
-WordGame.prototype.populateString = function populateString() {
-  document.getElementById('random-string').value = this.randomString;
+WordGame.prototype.focusInputField = function focusInputField() {
+  const input = document.getElementById('user-input');
+  input.focus();
+};
+
+WordGame.prototype.populateBaseString = function populateBaseString() {
+  const input = document.getElementById('base-string');
+  input.value = this.randomString;
+};
+
+WordGame.prototype.showError = function showError(msg) {
+  const input = document.getElementById('user-input');
+  input.setAttribute('class', '');
+  input.classList.add(...this.errorStyles);
+  const p = document.querySelector('#user-input + p');
+  p.textContent = msg;
+  p.removeAttribute('hidden');
+};
+
+WordGame.prototype.hideError = function hideError() {
+  const input = document.getElementById('user-input');
+  input.setAttribute('class', '');
+  input.classList.add(...this.validStyles);
+  const p = document.querySelector('#user-input + p');
+  p.setAttribute('hidden', '');
+  p.textContent = '';
 };
 
 WordGame.prototype.updateHighscore = function updateHighscore() {
-  const highscore = JSON.stringify(this.highscore);
+  const table = document.getElementById('highscore');
+  const tbody = document.getElementById('highscoreBody');
+  tbody.innerHTML = '';
 
-  document.getElementById('highscore').textContent = highscore;
+  this.highscore.forEach((item, index) => {
+    const tr = document.createElement('tr');
+
+    const tdPos = document.createElement('td');
+    tdPos.classList.add('border', 'px-4', 'py-2');
+    const tdWrd = document.createElement('td');
+    tdWrd.classList.add('border', 'px-4', 'py-2');
+    const tdScr = document.createElement('td');
+    tdScr.classList.add('border', 'px-4', 'py-2');
+
+    const posCnt = document.createTextNode(index + 1);
+    const wrdCnt = document.createTextNode(item.word);
+    const scrCnt = document.createTextNode(item.score);
+
+    tdPos.appendChild(posCnt);
+    tdWrd.appendChild(wrdCnt);
+    tdScr.appendChild(scrCnt);
+
+    tr.appendChild(tdPos);
+    tr.appendChild(tdWrd);
+    tr.appendChild(tdScr);
+
+    tbody.appendChild(tr);
+  });
+
+  table.removeAttribute('hidden');
 };
 
 async function initWordGame() {
