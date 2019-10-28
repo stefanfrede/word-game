@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WordGame</title>
+  <meta charset="UTF-8" />
+
+  <link
+    href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div class="w-full max-w-xs">
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="mb-4">
+        <label
+          class="block text-gray-700 text-sm font-bold mb-2"
+          for="username">
+          Random string
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3
+          text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="random-string"
+          type="text"
+          placeholder="Random string"
+          disabled>
+      </div>
+      <div class="mb-4">
+        <label
+          class="block text-gray-700 text-sm font-bold mb-2"
+          for="username">
+          Word
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3
+          text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="user-input"
+          type="text"
+          placeholder="Word">
+      </div>
+      <div class="flex items-center justify-between">
+        <button
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4
+          rounded focus:outline-none focus:shadow-outline js-btn-submit"
+          type="button">
+          Submit
+        </button>
+        <a
+          class="inline-block align-baseline font-bold text-sm text-blue-500
+          hover:text-blue-800 js-btn-reset"
+          href="#">
+          Reset
+        </a>
+      </div>
+    </form>
+    <div id="highscore"></div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
